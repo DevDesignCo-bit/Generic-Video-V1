@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4a4a4a" />
+    <link rel="icon" type="image/svg+xml" href="../kroxhub-cloud-favicon-vector.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" />
+    <title>Generic Video V1</title>
+    <style>
+      :root { --gray:#4a4a4a; --black:#050505; --green:#71e80d; --white:#fff; --pink:#ff0094; }
+      * { box-sizing:border-box; }
+      html,body { min-height:100%; margin:0; }
+      body { min-width:280px; color:var(--white); background:var(--gray); font-family:"Exo 2",Arial,Helvetica,sans-serif; }
+      .page { display:flex; flex-direction:column; min-height:100svh; padding:30px 20px 19px; background:var(--gray); }
+      .intro { margin:0 0 20px; color:#ededed; font-size:12px; line-height:1.2; text-align:center; }
+      .player { position:relative; width:min(100%,885px); aspect-ratio:885/486; min-height:370px; margin:0 auto; overflow:hidden; background:var(--black); }
+      .player-art { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:fill; }
+      .player-art img { display:block; width:100%; height:100%; object-fit:fill; }
+      .reactions { position:absolute; top:15px; left:18px; z-index:2; display:flex; gap:10px; }
+      .reaction { display:block; width:32px; height:32px; }
+      .reaction.like { padding:0; background:transparent; }
+      .close-icon,.like-icon { display:block; width:32px; height:32px; }
+      .player-play { position:absolute; top:62%; left:50%; display:grid; width:78px; height:78px; place-items:center; border:4px solid #fff; border-radius:50%; transform:translate(-50%,-50%); color:#fff; font-size:36px; text-indent:5px; }
+      .notice { position:absolute; top:34%; left:50%; z-index:3; width:min(340px,calc(100% - 44px)); padding:20px 20px 15px; border-radius:4px; color:#0e0e0e; background:#fff; transform:translate(-50%,-50%); text-align:left; }
+      .notice h1 { margin:0; font-size:19px; line-height:1.1; text-transform:uppercase; }
+      .desktop-heading-extra { display:block; margin-top:10px; font-size:15px; font-weight:400; line-height:1.15; text-transform:none; }
+      .notice p { margin:12px 0 0; font-size:15px; line-height:1.15; }
+      .notice > p:first-of-type { display:none; }
+      .mobile-instruction { display:none; }
+      .sms-instructions { margin-top:13px; text-align:center; }
+      .sms-instructions span { display:block; }
+      .send { font-size:16px; }
+      .keyword { margin-top:7px; color:var(--green); font-size:30px; letter-spacing:.03em; }
+      .to { margin-top:2px; font-size:16px; }
+      .shortcode { margin-top:5px; color:var(--green); font-size:30px; }
+      .price { margin:13px 0 0; font-size:11px; text-align:center; }
+      .mobile-cta { display:none; }
+      .controls { position:absolute; right:10px; bottom:9px; left:10px; color:#fff; }
+      .player-play,.controls { display:none; }
+      .progress { height:4px; background:#8b8b8b; }
+      .progress::before { content:""; display:block; width:33%; height:100%; background:#fff; }
+      .progress::after { content:""; display:block; width:11px; height:11px; margin:-7px 0 0 calc(33% - 5px); border-radius:50%; background:#fff; }
+      .control-row { display:flex; align-items:center; justify-content:space-between; margin-top:9px; font-size:18px; }
+      .control-row .left,.control-row .right { display:flex; align-items:center; gap:15px; }
+      .time { font-size:14px; }
+      .footer { width:min(100%,960px); margin:clamp(135px,18vh,220px) auto 0; color:#efefef; text-align:center; }
+      .sms-logo { display:block; width:83px; height:auto; margin:0 auto 25px; }
+      .footer p { max-width:910px; margin:0 auto 9px; font-size:12px; line-height:1.2; }
+      .footer a { margin:0 5px; color:#eee; font-size:12px; text-decoration:none; }
+      .footer a:hover,.footer a:focus-visible { text-decoration:underline; }
+      @keyframes pulse { 0%,100% { transform:scale(1); box-shadow:0 4px 10px rgb(0 0 0 / .18),0 0 0 0 rgb(31 203 32 / .32); } 50% { transform:scale(1.022); box-shadow:0 7px 16px rgb(0 0 0 / .22),0 0 0 10px rgb(31 203 32 / 0); } }
+      @media (max-width:640px) {
+        .page { padding:11px 0 12px; }
+        .intro { max-width:365px; margin:0 auto 11px; padding:0 14px; font-size:12px; }
+        .player { width:100%; min-height:0; aspect-ratio:390/456; overflow:visible; }
+        .reactions { top:16px; left:15px; }
+        .reaction { width:29px; height:29px; }
+        .notice { top:72px; width:calc(100% - 46px); padding:21px 20px 29px; transform:translateX(-50%); }
+        .notice h1 { font-size:23px; line-height:1.12; }
+        .desktop-heading-extra { display:none; }
+        .notice > p:first-of-type { display:block; }
+        .notice > p { margin-top:15px; font-size:16px; }
+        .notice > .mobile-instruction { display:block; margin-top:3px; font-size:16px; line-height:1.15; }
+        .sms-instructions { display:none; }
+        .mobile-cta { display:block; width:100%; margin-top:16px; padding:11px 10px; border-radius:8px; color:#090909; background:#1fcb20; font-size:16px; font-weight:500; line-height:1.1; text-align:center; text-decoration:none; animation:pulse 2.4s ease-in-out infinite; }
+        .mobile-cta strong,.mobile-cta span { display:block; }
+        .mobile-cta strong { font-size:17px; }
+        .mobile-cta span { margin-top:4px; font-size:15px; text-transform:uppercase; }
+        .notice .price { margin:13px 0 0; font-size:11px; }
+        .controls { right:8px; bottom:8px; left:8px; }
+        .control-row { margin-top:9px; font-size:20px; }
+        .control-row .left,.control-row .right { gap:13px; }
+        .time { font-size:14px; }
+        .footer { margin:169px auto 0; padding:0 10px; }
+        .sms-logo { margin-bottom:18px; }
+        .footer p { font-size:12px; line-height:1.15; }
+        .footer a { font-size:12px; }
+      }
+      @media (min-width:641px) and (max-height:850px) { .footer { margin-top:75px; } }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <p class="intro">En achetant, vous bénéficiez d’un accès à une grande variété de contenus fitness, d’actualités sportives et bien plus encore.</p>
+      <section class="player" aria-label="Lecteur vidéo">
+        <picture class="player-art" aria-hidden="true"><source media="(max-width: 640px)" srcset="player-mobile.png" /><img src="player-desktop.png" alt="" /></picture>
+        <div class="reactions" aria-hidden="true"><span class="reaction"><img class="close-icon" src="close.svg" alt="" /></span><span class="reaction like"><img class="like-icon" src="like.svg" alt="" /></span></div>
+        <div class="notice">
+          <h1>L’ACCÈS EST EXCLUSIVEMENT RÉSERVÉ AUX RÉSIDENTS DE FRANCE.<span class="desktop-heading-extra">Accédez à votre vidéo maintenant.</span></h1>
+          <p>Accédez à votre vidéo maintenant.</p>
+          <p class="mobile-instruction">Cliquez sur le bouton et envoyez un SMS.</p>
+          <div class="sms-instructions"><span class="send">Envoyer un SMS</span><span class="keyword">SPTX RAB</span><span class="to">à</span><span class="shortcode">81174</span></div>
+          <a class="mobile-cta" href="#details"><strong>CONTINUER</strong><span>ET ACHETER</span></a>
+          <p class="price">4,50 euro/sms + prix d'un sms</p>
+        </div>
+        <span class="player-play" aria-hidden="true">▶</span>
+        <div class="controls" aria-hidden="true"><div class="progress"></div><div class="control-row"><span class="left"><b>▶</b><b>▸Ⅰ</b><b>◖</b><span class="time">2:26 / 8:04</span></span><span class="right"><b>⚙</b><b>▣</b><b>⛶</b></span></div></div>
+      </section>
+      <footer class="footer" id="details">
+        <img class="sms-logo" src="sms-plus.png" alt="SMS+" />
+        <p>L'autorisation du titulaire de la ligne est requise. Coût ajouté à votre facture mobile. Envoyez SPTX au 81174.<br />Sur le service Sportexa, vous pouvez regarder des vidéos sportives, des résumés et bien plus encore. Vous disposez d’un accès illimité pendant 15 jours. Le coût de l'accès au service est de 4,5 EUR TTC (Frais uniques). Les frais n'incluent pas l'utilisation d'Internet mobile.<br />En cas de réclamation, joignez le support@sportexa.net</p>
+        <a href="https://sportexa.net/info/terms_and_conditions">Termes et conditions</a>
+        <a href="https://www.figma.com/exit?url=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F1FzzbDKKfmRYx2S7QuUIzQccF_4wH7trh%2Fview">Politique de confidentialité</a>
+      </footer>
+    </main>
+  </body>
+</html>
